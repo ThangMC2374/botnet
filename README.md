@@ -1,4 +1,4 @@
-![Img](/Botnet/image.webp?raw=true "Screenshot")
+![Img](Botnet/image.webp?raw=true "Screenshot")
 # XS Botnet
 - made by: daylight911 (discord), FuckIsra3l(telegram)
 # Features:
