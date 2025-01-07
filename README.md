@@ -8,6 +8,7 @@
 - Anti duplicate users
 - Works with putty
 - Username, Password, Maxtime and maxbots customize!
+- Command logs
 # Methods:
 - Syn (Well Optimised & tested)
 - Vse (Valve source engine query flood)
