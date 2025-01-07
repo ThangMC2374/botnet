@@ -6,6 +6,7 @@
 - Global cooldown
 - Anti duplicate users
 - Works with putty
+- Username, Password, Maxtime and maxbots customize!
 # Methods:
 - Syn (Well Optimised & tested)
 - Vse (Valve source engine query flood)
@@ -27,3 +28,4 @@
 ### IMPORTANT NOTES:
 - THIS IS FOR TESTING PURPOSES, ITS NOT MY FAULT IF SOMEONE USES FOR DDOS
 - It may have simple methods but atleast i made something cool?
+- Todo: Fix stupid shit Disconnect terminal (They are immune to be disconnected again because of shit code)
