@@ -1,6 +1,7 @@
 ![Img](image.webp?raw=true "Screenshot")
 # XS Botnet
 - made by: daylight911 (discord), FuckIsra3l(telegram)
+- Made in github codespaces with copilot, there may be some bugs
 # Features:
 - Clear scren
 - Stopall
@@ -9,6 +10,8 @@
 - Works with putty
 - Username, Password, Maxtime and maxbots customize!
 - Command logs
+- Arch list
+- Almost undetectable by mirai killers (tested)
 # Methods:
 - Syn (Well Optimised & tested)
 - Vse (Valve source engine query flood)
