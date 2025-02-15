@@ -18,14 +18,9 @@
 - UDP (Normal udp, No extra headers, just default)
 - Socket (Connect flood no data, Not tested)
 - http (HTTP 1.1 Get Attack)
-# CNC INSTALLATION
-- gcc cnc.c -o cnc -pthread
-- ./cnc <botport> <power/threads> <cncport>
-- It's better if you screen the cnc if you want to host it for long time without it dying
-# Bot installation
-- Change threads (depends on bots power you are getting)
-- Change ip to your cnc ip
-- Change bot port to your bot port
+# Install tutorial?
+- Check tutorial.txt
+- Bot cross compiling is unavailable now
 
 # Connection
 - Putty raw using your vps ip and cnc port
