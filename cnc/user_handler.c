@@ -29,7 +29,7 @@ void* update_title(void* arg) {
             send(client_socket, buffer, strlen(buffer), 0);
         }
 
-        sleep(1);
+        sleep(2);
     }
 
     return NULL;
@@ -43,31 +43,31 @@ void* handle_client(void* arg) {
     sprintf(buffer, "\r" YELLOW "\rLogin: " RESET);
     send(client_socket, buffer, strlen(buffer), 0);
 
-    usleep(1800000);
+    usleep(2800000);
 
-    char username[2048], password[2048];
-    memset(username, 0, 2048);
-    memset(password, 0, 2048);
+    char username[4048], password[4048];
+    memset(username, 0, 4048);
+    memset(password, 0, 4048);
 
     recv(client_socket, username, sizeof(username), 0);
     username[strcspn(username, "\r\n")] = 0;
 
     sprintf(buffer, "\r" YELLOW "\rPassword: " RESET);
     send(client_socket, buffer, strlen(buffer), 0);
-    usleep(1800000);
+    usleep(2800000);
 
     recv(client_socket, password, sizeof(password), 0);
     password[strcspn(password, "\r\n")] = 0;
 
     int user_index = check_login(username, password);
     if (user_index == -1) {
-        sprintf(buffer, "\r" RED "\rInvalid login" RESET);
+        sprintf(buffer, "\r" RED "\rInvalid login\r" RESET);
         send(client_socket, buffer, strlen(buffer), 0);
         close(client_socket);
     }
 
     while (user_index == -2) {
-        sprintf(buffer, "\r" YELLOW "\rUser connected already, Disconnect? Y/N: " RESET);
+        sprintf(buffer, "\r" YELLOW "\rUser connected already, Disconnect? Y/N:\r " RESET);
         send(client_socket, buffer, strlen(buffer), 0);
 
         char response[2];
