@@ -13,6 +13,7 @@
 - Added auto bot compiler for ubuntu (not recommended, use another compilers)
 - Bot Daemon spoofs itself now to avoid detection
 - Fixed Duplicate botcount and added bot validator
+- Finally added !opthelp & !exit for safe exit
 
 # XS Botnet
 - made by: daylight911 (discord), FuckIsra3l(telegram)
