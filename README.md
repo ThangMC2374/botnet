@@ -14,6 +14,7 @@
 - Bot Daemon spoofs itself now to avoid detection
 - Fixed Duplicate botcount and added bot validator
 - Finally added !opthelp & !exit for safe exit
+- Took +30 hours for testing, optimising & best ai structure & code fixes
 
 # XS Botnet
 - made by: daylight911 (discord), FuckIsra3l(telegram)
