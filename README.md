@@ -15,6 +15,10 @@
 - Fixed Duplicate botcount and added bot validator
 - Finally added !opthelp & !exit for safe exit
 - Took +30 hours for testing, optimising & best ai structure & code fixes
+- 
+# Next update estimated times
+- 5 May 2025
+- 20 May 2025
 
 # XS Botnet
 - made by: daylight911 (discord), FuckIsra3l(telegram)
