@@ -1,10 +1,26 @@
 ![Img](image.webp?raw=true "Screenshot")
+# What is new? (2025-4-23 | 23 april 2025)
+- Fixed segmentation error in command
+- Fixed command crashing on no arguments
+- Fixed terminal cursor for putty users when there are 2 sessions
+- Fixed memory allocation in bot, optimising it
+- Fixed udpraw and syn raw methods
+- Optimised command processor using Github Copilot AI (Structure)
+- Added Raknet method (Raknet Unconnected ping flood)
+- Added option psize for vse & raknet & udp & syn
+- Added srcport option for udp,syn (useful on some servers)
+- Added IP & File logging (settings.txt)
+- Added auto bot compiler for ubuntu (not recommended, use another compilers)
+- Bot Daemon spoofs itself now to avoid detection
+- Fixed Duplicate botcount and added bot validator
+
 # XS Botnet
 - made by: daylight911 (discord), FuckIsra3l(telegram)
 - Made in github codespaces with copilot, there may be some bugs
 # Features:
 - Clear scren
 - Stopall
+- exit
 - Global cooldown
 - Anti duplicate users
 - Works with putty
@@ -18,14 +34,13 @@
 - UDP (Normal udp, No extra headers, just default)
 - Socket (Connect flood no data, Not tested)
 - http (HTTP 1.1 Get Attack)
+- raknet (Bypasses some servers)
 # Install tutorial?
 - Check tutorial.txt
-- Bot cross compiling is unavailable now
 
 # Connection
 - Putty raw using your vps ip and cnc port
 
 ### IMPORTANT NOTES:
-- THIS IS FOR TESTING PURPOSES, ITS NOT MY FAULT IF SOMEONE USES FOR DDOS
-- It may have simple methods but atleast i made something cool?
 - Todo: Fix stupid shit Disconnect terminal (They are immune to be disconnected again because of shit code)
+- Fix always logged in even if socket closed
