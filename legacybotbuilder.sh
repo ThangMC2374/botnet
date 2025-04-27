@@ -3,9 +3,9 @@ apt update -y
 
 #setup http server if not installed
        
-apt-get install apache2 -y
+apt-get install nginx -y
 
-service apache2 start
+systemctl start nginx
 
 # install ubuntu cross compilers (not recommended)
 apt install gcc-powerpc64-linux-gnu -y
