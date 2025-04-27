@@ -1,2 +1,2 @@
-flies kaboom 60 400
+admin 123456 5000 5000
 user password maxtime maxbots
