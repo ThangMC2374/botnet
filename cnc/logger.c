@@ -1,6 +1,9 @@
 #include "logger.h"
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 void log_command(const char* user, const char* ip, const char* command) {
     int filelogs = 1;
@@ -19,20 +22,32 @@ void log_command(const char* user, const char* ip, const char* command) {
         fclose(sf);
     }
 
-    char logline[1024];
-    if (logips)
-        snprintf(logline, sizeof(logline), "[%s] %s ran command: %s\n", ip, user, command);
-    else
-        snprintf(logline, sizeof(logline), "%s ran command: %s\n", user, command);
+    time_t now = time(NULL);
+    struct tm *tm_info = localtime(&now);
+    char timestr[20];       // YYYY-MM-DD HH:MM:SS
+    char datedir[11];       // YYYY-MM-DD
+    strftime(timestr, sizeof(timestr), "%Y-%m-%d %H:%M:%S", tm_info);
+    strftime(datedir, sizeof(datedir), "%Y-%m-%d", tm_info);
+
+    char logline[2048];
+    if (logips) {
+        snprintf(logline, sizeof(logline), "[%s] [%s] %s ran command: %s\n",
+                 timestr, ip, user, command);
+    } else {
+        snprintf(logline, sizeof(logline), "[%s] %s ran command: %s\n",
+                 timestr, user, command);
+    }
 
     printf("%s", logline);
 
     if (filelogs) {
-        FILE* f = fopen("logs.txt", "a");
+        mkdir("logs", 0755);
+        char filepath[256];
+        snprintf(filepath, sizeof(filepath), "logs/%s.log", datedir);
+        FILE* f = fopen(filepath, "a");
         if (f) {
             fputs(logline, f);
             fclose(f);
         }
     }
-
 }
