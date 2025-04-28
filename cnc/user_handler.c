@@ -5,6 +5,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <pthread.h>
+
+#define BACKSPACE 127
 
 int user_sockets[MAX_USERS] = {0};
 
@@ -52,8 +55,8 @@ void* handle_client(void* arg) {
     usleep(2800000);
 
     char username[4048], password[4048];
-    memset(username, 0, 4048);
-    memset(password, 0, 4048);
+    memset(username, 0, sizeof(username));
+    memset(password, 0, sizeof(password));
 
     recv(client_socket, username, sizeof(username), 0);
     username[strcspn(username, "\r\n")] = 0;
@@ -62,8 +65,24 @@ void* handle_client(void* arg) {
     send(client_socket, buffer, strlen(buffer), 0);
     usleep(2800000);
 
-    recv(client_socket, password, sizeof(password), 0);
-    password[strcspn(password, "\r\n")] = 0;
+    char c;
+    int n;
+    size_t idx = 0;
+    while (idx < sizeof(password) - 1) {
+        n = recv(client_socket, &c, 1, 0);
+        if (n <= 0 || c == '\r' || c == '\n') break;
+        if (c == BACKSPACE || c == '\b') {
+            if (idx > 0) {
+                idx--;
+                send(client_socket, "\b \b", 3, 0);
+            }
+        } else {
+            password[idx++] = c;
+            send(client_socket, "*", 1, 0);
+        }
+    }
+    password[idx] = '\0';
+    send(client_socket, "\r\n", 2, 0);
 
     int user_index = check_login(username, password);
     if (user_index == -1) {
@@ -136,7 +155,7 @@ void* handle_client(void* arg) {
             send(client_socket, buffer, strlen(buffer), 0);
 
             process_command(user, command, client_socket, user_ip);
-               }
+        }
     }
     return NULL;
 }
