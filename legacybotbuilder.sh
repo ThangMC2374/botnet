@@ -1,5 +1,6 @@
 cd bot
 apt update -y
+ufw disable
 
 #setup http server if not installed
        
